@@ -1,4 +1,5 @@
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
@@ -127,7 +128,12 @@ int main(int argc, char **argv)
     bounding_boxes.push_back(triangle.calc_aabb());
   }
 
+  auto start = std::chrono::high_resolution_clock::now();
   BVH bvh(bounding_boxes);
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "BVH construction time: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms"
+            << std::endl;
 
   std::cout << max_leaf_count(bvh) << std::endl;
 
