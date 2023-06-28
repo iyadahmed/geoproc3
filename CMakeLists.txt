@@ -6,8 +6,10 @@ include(CheckIPOSupported)
 check_ipo_supported(RESULT is_ipo_supported OUTPUT error)
 
 add_library(geoproc_lib
+    "include/bvh.hpp"
     "include/vec3.hpp"
 
+    "src/bvh.cpp"
     "src/vec3.cpp"
 )
 target_compile_features(geoproc_lib PUBLIC cxx_std_11)
@@ -20,3 +22,7 @@ if(is_ipo_supported)
 else()
     message(WARNING "IPO is not supported: ${error}")
 endif()
+
+# Applications
+add_executable(plane_clipping "apps/plane_clipping.cpp")
+target_link_libraries(plane_clipping PRIVATE geoproc_lib)
