@@ -14,6 +14,8 @@ struct BVH {
     void operator+=(const AABB &other);
     Vec3 get_corner(int index) const;
     Vec3 calc_center() const;
+    bool is_close(const AABB &other, float tolerance) const;
+    bool contains(const AABB &other) const;
   };
 
   struct Node {
@@ -37,4 +39,5 @@ struct BVH {
  public:
   explicit BVH(const std::vector<AABB> &bounding_boxes);
   const Node *get_root() const;
+  void validate_bounding_boxes(const std::vector<AABB> &bounding_boxes) const;
 };

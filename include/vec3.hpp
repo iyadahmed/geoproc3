@@ -15,4 +15,7 @@ struct Vec3 {
   Vec3 max(const Vec3 &other) const;
   float dot(const Vec3 &other) const;
   float operator[](int index) const;
+  bool is_close(const Vec3 &other, float tolerance) const;
+  bool operator<=(const Vec3 &other) const;
+  bool operator>=(const Vec3 &other) const;
 };

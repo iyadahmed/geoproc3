@@ -1,5 +1,6 @@
 #include <algorithm>  // for std::min and max
 #include <cassert>
+#include <cmath>
 
 #include "vec3.hpp"
 
@@ -61,4 +62,20 @@ float Vec3::operator[](int index) const
 {
   assert(index >= 0 && index < 3);
   return (&x)[index];
+}
+
+bool Vec3::is_close(const Vec3 &other, float tolerance) const
+{
+  return std::abs(x - other.x) < tolerance && std::abs(y - other.y) < tolerance &&
+         std::abs(z - other.z) < tolerance;
+}
+
+bool Vec3::operator<=(const Vec3 &other) const
+{
+  return x <= other.x && y <= other.y && z <= other.z;
+}
+
+bool Vec3::operator>=(const Vec3 &other) const
+{
+  return x >= other.x && y >= other.y && z >= other.z;
 }

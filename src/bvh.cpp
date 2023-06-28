@@ -26,11 +26,21 @@ Vec3 BVH::AABB::calc_center() const
   return (min + max) / 2;
 }
 
+bool BVH::AABB::is_close(const AABB &other, float tolerance) const
+{
+  return min.is_close(other.min, tolerance) && max.is_close(other.max, tolerance);
+}
+
+bool BVH::AABB::contains(const AABB &other) const
+{
+  return other.min >= min && other.max <= max;
+}
+
 BVH::Node *BVH::create_node(const std::vector<AABB> &bounding_boxes, size_t start, size_t count)
 {
-  AABB aabb = bounding_boxes[start];
+  AABB aabb = bounding_boxes[indices[start]];
   for (size_t i = start + 1; i < start + count; i++) {
-    aabb += bounding_boxes[i];
+    aabb += bounding_boxes[indices[i]];
   }
   return new Node{aabb, nullptr, nullptr, start, count};
 }
@@ -111,11 +121,12 @@ static size_t partition_indices(const std::vector<BVH::AABB> &bounding_boxes,
 
 BVH::BVH(const std::vector<AABB> &bounding_boxes)
 {
-  root = create_node(bounding_boxes, 0, bounding_boxes.size());
   indices.reserve(bounding_boxes.size());
   for (size_t i = 0; i < bounding_boxes.size(); i++) {
     indices.push_back(i);
   }
+
+  root = create_node(bounding_boxes, 0, bounding_boxes.size());
 
   std::stack<Node *> stack;
   stack.push(root);
@@ -153,4 +164,27 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
 const BVH::Node *BVH::get_root() const
 {
   return root;
+}
+
+void BVH::validate_bounding_boxes(const std::vector<AABB> &bounding_boxes) const
+{
+  std::stack<const Node *> stack;
+  stack.push(root);
+  while (!stack.empty()) {
+    const Node *node = stack.top();
+    stack.pop();
+    if (node->is_leaf()) {
+      AABB aabb = bounding_boxes[indices[node->start]];
+      for (size_t i = node->start + 1; i < node->start + node->count; i++) {
+        aabb += bounding_boxes[indices[i]];
+      }
+      assert(aabb.is_close(node->aabb, 0.0001f));
+    }
+    else {
+      AABB aabb = node->left->aabb + node->right->aabb;
+      assert(node->aabb.contains(aabb));
+      stack.push(node->left);
+      stack.push(node->right);
+    }
+  }
 }

@@ -130,5 +130,7 @@ int main(int argc, char **argv)
   BVH bvh(bounding_boxes);
 
   std::cout << max_leaf_count(bvh) << std::endl;
+
+  bvh.validate_bounding_boxes(bounding_boxes);
   return 0;
 }
