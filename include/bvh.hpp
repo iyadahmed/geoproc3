@@ -40,4 +40,6 @@ struct BVH {
   explicit BVH(const std::vector<AABB> &bounding_boxes);
   const Node *get_root() const;
   void validate_bounding_boxes(const std::vector<AABB> &bounding_boxes) const;
+  // Get correct primitive index from an index stored in a BVH node
+  size_t get_primitive_index(size_t index) const;
 };

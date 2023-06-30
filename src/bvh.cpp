@@ -188,3 +188,8 @@ void BVH::validate_bounding_boxes(const std::vector<AABB> &bounding_boxes) const
     }
   }
 }
+
+size_t BVH::get_primitive_index(size_t index) const
+{
+  return indices[index];
+}
