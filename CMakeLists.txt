@@ -5,6 +5,11 @@ project(geoproc)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT is_ipo_supported OUTPUT error)
 
+# Cache variables
+set(ENABLE_STRICT_COMPILER_OPTIONS ON CACHE BOOL "Enable strict compile options")
+set(ENABLE_ADDRESS_SANATIZER_IN_DEBUG_BUILDS OFF CACHE BOOL "Enable address sanatizer in debug builds")
+
+# Libraries
 add_library(geoproc_lib
     "include/bvh.hpp"
     "include/vec3.hpp"
@@ -21,6 +26,30 @@ if(is_ipo_supported)
     set_target_properties(geoproc_lib PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
     message(WARNING "IPO is not supported: ${error}")
+endif()
+
+# Enable strict compiler options if requested
+if(ENABLE_STRICT_COMPILER_OPTIONS)
+    if(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "GNU")
+        target_compile_options(geoproc_lib PUBLIC -Wall -Wextra -Wpedantic -Werror)
+    elseif(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "MSVC")
+        target_compile_options(geoproc_lib PUBLIC /W4 /WX)
+    else()
+        message(WARNING "Unknown compiler frontend variant: ${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+    endif()
+endif()
+
+# Enable address sanatizer in debug builds if requested
+if(ENABLE_ADDRESS_SANATIZER_IN_DEBUG_BUILDS)
+    if(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "GNU")
+        target_compile_options(geoproc_lib PUBLIC $<$<CONFIG:Debug>:-fsanitize=address>)
+        target_link_options(geoproc_lib PUBLIC $<$<CONFIG:Debug>:-fsanitize=address>)
+    elseif(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "MSVC")
+        target_compile_options(geoproc_lib PUBLIC $<$<CONFIG:Debug>:/fsanitize=address>)
+        target_link_options(geoproc_lib PUBLIC $<$<CONFIG:Debug>:/fsanitize=address>)
+    else()
+        message(WARNING "Unknown compiler frontend variant: ${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+    endif()
 endif()
 
 # Applications
