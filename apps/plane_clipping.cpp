@@ -186,7 +186,13 @@ int main(int argc, char **argv)
 
   std::vector<Triangle> output;
   Plane plane = {Vec3(0.0f, 0.0f, 1.0f), 50.0f};
+
+  start = std::chrono::high_resolution_clock::now();
   plane_clipping(triangles, bvh, plane, output);
+  end = std::chrono::high_resolution_clock::now();
+  std::cout << "Plane clipping time: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms"
+            << std::endl;
 
   std::ofstream output_mesh_file;
   output_mesh_file.exceptions(std::ofstream::badbit | std::ofstream::failbit);
