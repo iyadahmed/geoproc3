@@ -64,8 +64,8 @@ size_t BVH::count_leaf_primitives() const
   return count;
 }
 
-static void calculate_split_axis_and_position(const std::vector<size_t> &indices,
-                                              const std::vector<BVH::AABB> &bounding_boxes,
+static void calculate_split_axis_and_position(const std::vector<Vec3> &bounding_boxes_centers,
+                                              const std::vector<size_t> &indices,
                                               size_t start,
                                               size_t count,
                                               int *split_axis,
@@ -75,7 +75,7 @@ static void calculate_split_axis_and_position(const std::vector<size_t> &indices
   Vec3 mean(0.0f);
   Vec3 mean_of_squares(0.0f);
   for (size_t i = start; i < start + count; i++) {
-    Vec3 centroid = bounding_boxes[indices[i]].calc_center();
+    Vec3 centroid = bounding_boxes_centers[indices[i]];
     mean += centroid / (float)count;
     mean_of_squares += (centroid * centroid) / (float)count;
   }
@@ -90,14 +90,14 @@ static void calculate_split_axis_and_position(const std::vector<size_t> &indices
   *split_position = mean[*split_axis];
 }
 
-static size_t partition_indices(const std::vector<BVH::AABB> &bounding_boxes,
+static size_t partition_indices(const std::vector<Vec3> &bounding_boxes_centers,
                                 std::vector<size_t> &indices,
                                 size_t start,
                                 size_t count,
                                 int split_axis,
                                 float split_position)
 {
-#define predicate(i) (bounding_boxes[indices[i]].calc_center()[split_axis] < split_position)
+#define predicate(i) (bounding_boxes_centers[indices[i]][split_axis] < split_position)
 
   size_t first = start;
   size_t last = start + count - 1;
@@ -128,6 +128,12 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
 
   root = create_node(bounding_boxes, 0, bounding_boxes.size());
 
+  std::vector<Vec3> bounding_boxes_centers;
+  bounding_boxes_centers.reserve(bounding_boxes.size());
+  for (const AABB &aabb : bounding_boxes) {
+    bounding_boxes_centers.push_back(aabb.calc_center());
+  }
+
   std::stack<Node *> stack;
   stack.push(root);
 
@@ -145,8 +151,9 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
     int split_axis;
     float split_pos;
     calculate_split_axis_and_position(
-        indices, bounding_boxes, start, count, &split_axis, &split_pos);
-    size_t first = partition_indices(bounding_boxes, indices, start, count, split_axis, split_pos);
+        bounding_boxes_centers, indices, start, count, &split_axis, &split_pos);
+    size_t first = partition_indices(
+        bounding_boxes_centers, indices, start, count, split_axis, split_pos);
 
     if (first == start || first == start + count) {
       continue;
