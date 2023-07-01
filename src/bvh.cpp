@@ -159,6 +159,7 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
   }
 
   assert(count_leaf_primitives() == bounding_boxes.size());
+  assert(are_bounding_boxes_valid(bounding_boxes));
 }
 
 const BVH::Node *BVH::get_root() const
@@ -166,7 +167,7 @@ const BVH::Node *BVH::get_root() const
   return root;
 }
 
-void BVH::validate_bounding_boxes(const std::vector<AABB> &bounding_boxes) const
+bool BVH::are_bounding_boxes_valid(const std::vector<AABB> &bounding_boxes) const
 {
   std::stack<const Node *> stack;
   stack.push(root);
@@ -178,15 +179,20 @@ void BVH::validate_bounding_boxes(const std::vector<AABB> &bounding_boxes) const
       for (size_t i = node->start + 1; i < node->start + node->count; i++) {
         aabb += bounding_boxes[indices[i]];
       }
-      assert(aabb.is_close(node->aabb, 0.0001f));
+      if (!aabb.is_close(node->aabb, 0.0001f)) {
+        return false;
+      }
     }
     else {
-      AABB aabb = node->left->aabb + node->right->aabb;
-      assert(node->aabb.contains(aabb));
+      if (!node->aabb.is_close(node->left->aabb + node->right->aabb, 0.0001f)) {
+        return false;
+      }
       stack.push(node->left);
       stack.push(node->right);
     }
   }
+
+  return true;
 }
 
 size_t BVH::get_primitive_index(size_t index) const

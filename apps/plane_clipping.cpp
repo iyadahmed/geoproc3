@@ -184,8 +184,6 @@ int main(int argc, char **argv)
 
   std::cout << max_leaf_count(bvh) << std::endl;
 
-  bvh.validate_bounding_boxes(bounding_boxes);
-
   std::vector<Triangle> output;
   Plane plane = {Vec3(0.0f, 0.0f, 1.0f), 50.0f};
   plane_clipping(triangles, bvh, plane, output);
