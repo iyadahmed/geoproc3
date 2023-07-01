@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdlib>
 #include <stack>
 
 #include "bvh.hpp"
@@ -42,7 +43,8 @@ BVH::Node *BVH::create_node(const std::vector<AABB> &bounding_boxes, size_t star
   for (size_t i = start + 1; i < start + count; i++) {
     aabb += bounding_boxes[indices[i]];
   }
-  return new Node{aabb, nullptr, nullptr, start, count};
+  preallocated_nodes[number_of_allocated_nodes++] = Node{aabb, nullptr, nullptr, start, count};
+  return preallocated_nodes + number_of_allocated_nodes - 1;
 }
 
 size_t BVH::count_leaf_primitives() const
@@ -126,6 +128,11 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
     indices.push_back(i);
   }
 
+  // Pre-allocate uninitialized memory for nodes
+  // actual needed count is 2 * bounding_boxes.size() - 1
+  // but we allocate one more to avoid checking for underflow
+  preallocated_nodes = (Node *)malloc(sizeof(Node) * (2 * bounding_boxes.size()));
+
   root = create_node(bounding_boxes, 0, bounding_boxes.size());
 
   std::vector<Vec3> bounding_boxes_centers;
@@ -167,6 +174,11 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
 
   assert(count_leaf_primitives() == bounding_boxes.size());
   assert(are_bounding_boxes_valid(bounding_boxes));
+}
+
+BVH::~BVH()
+{
+  free(preallocated_nodes);
 }
 
 const BVH::Node *BVH::get_root() const

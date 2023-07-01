@@ -32,6 +32,8 @@ struct BVH {
 
  private:
   Node *root = nullptr;
+  Node *preallocated_nodes = nullptr;
+  size_t number_of_allocated_nodes = 0;
   std::vector<size_t> indices;
   size_t count_leaf_primitives() const;
   Node *create_node(const std::vector<AABB> &bounding_boxes, size_t start, size_t count);
@@ -39,6 +41,7 @@ struct BVH {
 
  public:
   explicit BVH(const std::vector<AABB> &bounding_boxes);
+  ~BVH();
   const Node *get_root() const;
   // Get correct primitive index from an index stored in a BVH node
   size_t get_primitive_index(size_t index) const;
