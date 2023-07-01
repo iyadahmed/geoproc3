@@ -76,10 +76,11 @@ static void calculate_split_axis_and_position(const std::vector<Vec3> &bounding_
 
   Vec3 mean(0.0f);
   Vec3 mean_of_squares(0.0f);
+  float count_reciprocal = 1.0f / (float)count;
   for (size_t i = start; i < start + count; i++) {
     Vec3 centroid = bounding_boxes_centers[indices[i]];
-    mean += centroid / (float)count;
-    mean_of_squares += (centroid * centroid) / (float)count;
+    mean += centroid * count_reciprocal;
+    mean_of_squares += centroid * centroid * count_reciprocal;
   }
   Vec3 variance = mean_of_squares - mean * mean;
   *split_axis = 0;
