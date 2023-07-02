@@ -43,8 +43,14 @@ BVH::Node *BVH::create_node(const std::vector<AABB> &bounding_boxes, size_t star
   for (size_t i = start + 1; i < start + count; i++) {
     aabb += bounding_boxes[indices[i]];
   }
-  preallocated_nodes[number_of_allocated_nodes++] = Node{aabb, nullptr, nullptr, start, count};
-  return preallocated_nodes + number_of_allocated_nodes - 1;
+  Node *node = preallocated_nodes + number_of_allocated_nodes;
+  node->aabb = aabb;
+  node->left = nullptr;
+  node->right = nullptr;
+  node->start = start;
+  node->count = count;
+  number_of_allocated_nodes += 1;
+  return node;
 }
 
 size_t BVH::count_leaf_primitives() const
