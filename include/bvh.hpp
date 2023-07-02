@@ -33,6 +33,7 @@ struct BVH {
  private:
   Node *root = nullptr;
   Node *preallocated_nodes = nullptr;
+  size_t number_of_preallocated_nodes = 0;
   size_t number_of_allocated_nodes = 0;
   std::vector<size_t> indices;
   size_t count_leaf_primitives() const;

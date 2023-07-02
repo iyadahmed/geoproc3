@@ -43,6 +43,7 @@ BVH::Node *BVH::create_node(const std::vector<AABB> &bounding_boxes, size_t star
   for (size_t i = start + 1; i < start + count; i++) {
     aabb += bounding_boxes[indices[i]];
   }
+  assert(number_of_allocated_nodes < number_of_preallocated_nodes);
   Node *node = preallocated_nodes + number_of_allocated_nodes;
   node->aabb = aabb;
   node->left = nullptr;
@@ -130,6 +131,7 @@ static size_t partition_indices(const std::vector<Vec3> &bounding_boxes_centers,
 
 BVH::BVH(const std::vector<AABB> &bounding_boxes)
 {
+  assert(!bounding_boxes.empty());
   indices.reserve(bounding_boxes.size());
   for (size_t i = 0; i < bounding_boxes.size(); i++) {
     indices.push_back(i);
@@ -138,7 +140,8 @@ BVH::BVH(const std::vector<AABB> &bounding_boxes)
   // Pre-allocate uninitialized memory for nodes
   // actual needed count is 2 * bounding_boxes.size() - 1
   // but we allocate one more to avoid checking for underflow
-  preallocated_nodes = (Node *)malloc(sizeof(Node) * (2 * bounding_boxes.size()));
+  number_of_preallocated_nodes = 2 * bounding_boxes.size();
+  preallocated_nodes = (Node *)malloc(sizeof(Node) * number_of_preallocated_nodes);
 
   root = create_node(bounding_boxes, 0, bounding_boxes.size());
 
