@@ -25,7 +25,7 @@ target_include_directories(geoproc_lib PUBLIC "include")
 if(is_ipo_supported)
     set_target_properties(geoproc_lib PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
-    message(WARNING "IPO is not supported: ${error}")
+    message(WARNING "IPO is not supported: ${error}, performance may be suboptimal")
 endif()
 
 # Enable strict compiler options if requested
