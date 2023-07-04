@@ -107,6 +107,7 @@ static size_t partition_indices(const std::vector<Vec3> &bounding_boxes_centers,
                                 int split_axis,
                                 float split_position)
 {
+  // Based on https://web.archive.org/web/20230704185541/https://en.cppreference.com/w/cpp/algorithm/partition
 #define predicate(i) (bounding_boxes_centers[indices[i]][split_axis] < split_position)
 
   size_t first = start;
