@@ -12,12 +12,14 @@ set(ENABLE_ADDRESS_SANATIZER_IN_DEBUG_BUILDS OFF CACHE BOOL "Enable address sana
 # Libraries
 add_library(geoproc_lib
     "include/bvh.hpp"
+    "include/stl_io.hpp"
     "include/vec3.hpp"
 
     "src/bvh.cpp"
+    "src/stl_io.cpp"
     "src/vec3.cpp"
 )
-target_compile_features(geoproc_lib PUBLIC cxx_std_11)
+target_compile_features(geoproc_lib PUBLIC cxx_std_20)
 set_target_properties(geoproc_lib PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(geoproc_lib PUBLIC "include")
 
@@ -55,3 +57,6 @@ endif()
 # Applications
 add_executable(plane_clipping "apps/plane_clipping.cpp")
 target_link_libraries(plane_clipping PRIVATE geoproc_lib)
+
+add_executable(plane_clipping2 "apps/plane_clipping2.cpp")
+target_link_libraries(plane_clipping2 PRIVATE geoproc_lib)

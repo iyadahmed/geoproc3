@@ -1,13 +1,16 @@
 #pragma once
 
 struct Vec3 {
-  float x, y, z;
+  float x;
+  float y;
+  float z;
   explicit Vec3(float value);
   Vec3(float x, float y, float z);
   Vec3 operator+(const Vec3 &other) const;
   void operator+=(const Vec3 &other);
   Vec3 operator-(const Vec3 &other) const;
   Vec3 operator*(const Vec3 &other) const;
+  friend Vec3 operator*(float scalar, const Vec3 &vector);
   Vec3 operator/(const Vec3 &other) const;
   Vec3 operator*(float scalar) const;
   Vec3 operator/(float scalar) const;
@@ -18,4 +21,6 @@ struct Vec3 {
   bool is_close(const Vec3 &other, float tolerance) const;
   bool operator<=(const Vec3 &other) const;
   bool operator>=(const Vec3 &other) const;
+  float length() const;
+  Vec3 normalized() const;
 };

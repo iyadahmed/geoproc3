@@ -79,3 +79,18 @@ bool Vec3::operator>=(const Vec3 &other) const
 {
   return x >= other.x && y >= other.y && z >= other.z;
 }
+
+float Vec3::length() const
+{
+  return std::sqrt(x * x + y * y + z * z);
+}
+
+Vec3 Vec3::normalized() const
+{
+  return (*this) / length();
+}
+
+Vec3 operator*(float scalar, const Vec3 &vector)
+{
+  return vector * scalar;
+}
