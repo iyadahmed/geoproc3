@@ -63,7 +63,6 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
 static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon,
                                       const std::vector<Plane> &convex_hull)
 {
-  // TODO: check that the convex hull is actually convex
   std::vector<Vec3> result = polygon;
   for (const Plane &plane : convex_hull) {
     result = clip_polygon(result, plane);
