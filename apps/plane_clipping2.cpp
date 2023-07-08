@@ -89,12 +89,12 @@ static std::vector<Vec3> as_polygon([[maybe_unused]] const Triangle &triangle)
   return {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
 }
 
-[[maybe_unused]] static void clip_triangle(const Triangle &triangle,
-                                           const Plane &plane,
-                                           std::vector<Triangle> &output)
+static void clip_triangle(const Triangle &triangle,
+                          const std::vector<Plane> &planes,
+                          std::vector<Triangle> &output)
 {
-  auto clipped_polygon = clip_polygon(as_polygon(triangle), plane);
-  if (!clipped_polygon.empty()) {
+  auto clipped_polygon = clip_polygon(as_polygon(triangle), planes);
+  if (clipped_polygon.size() >= 3) {
     triangulate_fan(clipped_polygon, output);
   }
 }
@@ -113,11 +113,7 @@ int main(int argc, char **argv)
                                {.normal = Vec3(1, 0, 0), .point = Vec3(0, 0, 0)}};
 
   for (const Triangle &triangle : input_triangles) {
-    auto clipped_polygon = clip_polygon(as_polygon(triangle), planes);
-    if (clipped_polygon.size() < 3) {
-      continue;
-    }
-    triangulate_fan(clipped_polygon, output_triangles);
+    clip_triangle(triangle, planes, output_triangles);
   }
   std::cout << "Number of triangles after clipping: " << output_triangles.size() << std::endl;
   write_binary_stl("clipped.stl", output_triangles);
