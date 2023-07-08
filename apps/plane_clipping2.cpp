@@ -61,10 +61,10 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
 }
 
 static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon,
-                                      const std::vector<Plane> &convex_hull)
+                                      const std::vector<Plane> &convex_set)
 {
   std::vector<Vec3> result = polygon;
-  for (const Plane &plane : convex_hull) {
+  for (const Plane &plane : convex_set) {
     result = clip_polygon(result, plane);
   }
   return result;
