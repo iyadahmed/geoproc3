@@ -6,6 +6,11 @@
 #include "stl_io.hpp"
 #include "vec3.hpp"
 
+// The polygon clipping algorithm down here is inspired by Sutherland-Hodgman algorithm:
+// https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+// Thanks to Vilem for pointing to the Sutherland-Hodgman algorithm in this post:
+// https://www.gamedev.net/forums/topic/698826-whats-the-real-tech-behind-the-gpu-triangles-clipping/5390202/
+
 struct Plane {
   Vec3 normal;
   Vec3 point;
@@ -84,10 +89,6 @@ static std::vector<Vec3> as_polygon([[maybe_unused]] const Triangle &triangle)
   return {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
 }
 
-// Inspired by Sutherland-Hodgman algorithm
-// https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
-// Thanks to Vilem for pointing me to the Sutherland-Hodgman algorithm
-// https://www.gamedev.net/forums/topic/698826-whats-the-real-tech-behind-the-gpu-triangles-clipping/5390202/
 [[maybe_unused]] static void clip_triangle(const Triangle &triangle,
                                            const Plane &plane,
                                            std::vector<Triangle> &output)
