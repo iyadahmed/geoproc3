@@ -31,13 +31,24 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
     float curr_distance = distance(curr_point, plane);
     float prev_distance = distance(prev_point, plane);
 
-    if (prev_distance > -0.00001f) {
+    // If previous point is on or above plane, include it in result
+    if (prev_distance >= -0.00001f) {
       result.push_back(prev_point);
+      // If current point is also on or above plane, skip iteration,
+      // since in next iteration it becomes the previous point, which we include if it was on or
+      // above plane, so this check could be cached if we want to, it is a simple comparison
+      // anyways
+      // NOTE: this is a nice check to do to skip intersection code
+      if (curr_distance >= -0.00001f) {
+        continue;
+      }
     }
 
-    // If there's an intersection between the edge and the plane, add the intersection point
-    // to the clipping result.
+    // Otherwise,
+    // if there's an intersection between the edge and the plane, add the intersection point
+    // to the clipping result
     // Thanks to https://poe.com/GPT-4 for filling this part
+    // FIXME: this does not look like correct edge-plane intersection
     if ((curr_distance > -0.00001f && prev_distance < -0.00001f) ||
         (curr_distance < -0.00001f && prev_distance > -0.00001f))
     {
@@ -103,7 +114,7 @@ int main(int argc, char **argv)
 
   for (const Triangle &triangle : input_triangles) {
     auto clipped_polygon = clip_polygon(as_polygon(triangle), planes);
-    if (clipped_polygon.empty()) {
+    if (clipped_polygon.size() < 3) {
       continue;
     }
     triangulate_fan(clipped_polygon, output_triangles);
