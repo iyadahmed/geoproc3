@@ -49,9 +49,9 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
       }
     }
 
-    // Ensure consistent intersection results for same edges,
-    // in different triangles that are traversed in the opposite direction,
-    // without this there will be tiny differences between the floating point results.
+    // Ensure consistent intersection results for same edges that are in different triangles and
+    // are traversed in the opposite direction, without this there will be tiny differences between
+    // the floating point results.
     if (curr_distance < prev_distance) {
       std::swap(curr_distance, prev_distance);
       std::swap(curr_point, prev_point);
