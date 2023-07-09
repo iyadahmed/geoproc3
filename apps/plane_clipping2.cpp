@@ -61,7 +61,7 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
     // if there's an intersection between the edge and the plane, add the intersection point
     // to the clipping result
     // Thanks to https://poe.com/GPT-4 for filling this part
-    // FIXME: this does not look like correct edge-plane intersection
+    // TODO: double check this maybe?
     if ((curr_distance > -0.00001f && prev_distance < -0.00001f) ||
         (curr_distance < -0.00001f && prev_distance > -0.00001f))
     {
