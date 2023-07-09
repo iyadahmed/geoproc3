@@ -62,6 +62,7 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
     // to the clipping result
     // Thanks to https://poe.com/GPT-4 for filling this part
     // TODO: double check this maybe?
+    // It seems to be working so far anyways
     if ((curr_distance > 0.0f && prev_distance < 0.0f) ||
         (curr_distance < 0.0f && prev_distance > 0.0f))
     {
