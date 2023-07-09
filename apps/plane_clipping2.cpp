@@ -37,14 +37,14 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
     float prev_distance = distance(prev_point, plane);
 
     // If previous point is on or above plane, include it in result
-    if (prev_distance >= -0.00001f) {
+    if (prev_distance >= 0.0f) {
       result.push_back(prev_point);
       // If current point is also on or above plane, skip iteration,
       // since in next iteration it becomes the previous point, which we include if it was on or
       // above plane, so this check could be cached if we want to, it is a simple comparison
       // anyways
       // NOTE: this is a nice check to do to skip intersection code
-      if (curr_distance >= -0.00001f) {
+      if (curr_distance >= 0.0f) {
         continue;
       }
     }
@@ -62,8 +62,8 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
     // to the clipping result
     // Thanks to https://poe.com/GPT-4 for filling this part
     // TODO: double check this maybe?
-    if ((curr_distance > -0.00001f && prev_distance < -0.00001f) ||
-        (curr_distance < -0.00001f && prev_distance > -0.00001f))
+    if ((curr_distance > 0.0f && prev_distance < 0.0f) ||
+        (curr_distance < 0.0f && prev_distance > 0.0f))
     {
       float t = prev_distance / (prev_distance - curr_distance);
       Vec3 intersection_point = prev_point + t * (curr_point - prev_point);
