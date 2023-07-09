@@ -30,8 +30,8 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
 {
   std::vector<Vec3> result;
   for (size_t i = 0; i < polygon.size(); i++) {
-    const Vec3 &curr_point = polygon[(i + 1) % polygon.size()];
-    const Vec3 &prev_point = polygon[i];
+    Vec3 curr_point = polygon[(i + 1) % polygon.size()];
+    Vec3 prev_point = polygon[i];
 
     float curr_distance = distance(curr_point, plane);
     float prev_distance = distance(prev_point, plane);
@@ -47,6 +47,14 @@ static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Pl
       if (curr_distance >= -0.00001f) {
         continue;
       }
+    }
+
+    // Ensure consistent intersection results for same edges,
+    // in different triangles that are traversed in the opposite direction,
+    // without this there will be tiny differences between the floating point results.
+    if (curr_distance < prev_distance) {
+      std::swap(curr_distance, prev_distance);
+      std::swap(curr_point, prev_point);
     }
 
     // Otherwise,
