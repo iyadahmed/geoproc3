@@ -38,6 +38,8 @@ struct BVH {
   std::vector<size_t> indices;
   size_t count_leaf_primitives() const;
   Node *create_node(const std::vector<AABB> &bounding_boxes, size_t start, size_t count);
+  // This method is intended to be used with the same bounding boxes that were used to build the
+  // BVH
   bool are_bounding_boxes_valid(const std::vector<AABB> &bounding_boxes) const;
 
  public:
