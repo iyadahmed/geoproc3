@@ -1,8 +1,11 @@
 #include <cassert>
+#include <chrono>
 #include <cmath>
 #include <iostream>
+#include <stack>
 #include <vector>
 
+#include "bvh.hpp"
 #include "stl_io.hpp"
 #include "vec3.hpp"
 
@@ -21,9 +24,65 @@ struct Ray {
   Vec3 direction;
 };
 
+struct Convex_Set {
+  std::vector<Plane> planes;
+  bool is_inside(const Vec3 &point) const;
+};
+
+enum class AABB_Convex_Set_Intersection_Type {
+  OVERLAP,
+  FULLY_INSIDE,
+  FULLY_OUTSIDE,
+};
+
 static float distance(const Vec3 &point, const Plane &plane)
 {
   return (point - plane.point).dot(plane.normal);
+}
+
+bool Convex_Set::is_inside(const Vec3 &point) const
+{
+  for (const Plane &plane : planes)
+    if (distance(point, plane) < 0)
+      return false;
+  return true;
+}
+
+AABB_Convex_Set_Intersection_Type intersect(const BVH::AABB &aabb, const Convex_Set &convex_set)
+{
+  int num_inside = 0;
+  for (int i = 0; i < 8; i++)
+    if (convex_set.is_inside(aabb.get_corner(i)))
+      num_inside++;
+
+  if (num_inside == 8)
+    return AABB_Convex_Set_Intersection_Type::FULLY_INSIDE;
+  if (num_inside == 0)
+    return AABB_Convex_Set_Intersection_Type::FULLY_OUTSIDE;
+  return AABB_Convex_Set_Intersection_Type::OVERLAP;
+}
+
+// Copy all triangles recursively from the BVH starting from node into the output vector
+static void copy_triangles(const std::vector<Triangle> &input,
+                           const BVH &bvh,
+                           const BVH::Node *start_node,
+                           std::vector<Triangle> &output)
+{
+  std::stack<const BVH::Node *> stack;
+  stack.push(start_node);
+  while (!stack.empty()) {
+    const BVH::Node *node = stack.top();
+    stack.pop();
+    if (node->is_leaf()) {
+      for (size_t i = node->start; i < node->start + node->count; i++) {
+        output.push_back(input[bvh.get_primitive_index(i)]);
+      }
+    }
+    else {
+      stack.push(node->left);
+      stack.push(node->right);
+    }
+  }
 }
 
 static std::vector<Vec3> clip_polygon(const std::vector<Vec3> &polygon, const Plane &plane)
@@ -116,13 +175,49 @@ int main(int argc, char **argv)
   std::vector<Triangle> input_triangles = read_binary_stl(argv[1]);
   std::vector<Triangle> output_triangles;
   output_triangles.reserve(input_triangles.size());
+  std::vector<BVH::AABB> bounding_boxes;
+  bounding_boxes.reserve(input_triangles.size());
+  for (const Triangle &t : input_triangles) {
+    bounding_boxes.push_back(t.calc_aabb());
+  }
+  BVH bvh(bounding_boxes);
 
   std::vector<Plane> planes = {{.normal = Vec3(0, 0, 1), .point = Vec3(0, 0, 50)},
                                {.normal = Vec3(1, 0, 0), .point = Vec3(0, 0, 0)}};
 
-  for (const Triangle &triangle : input_triangles) {
-    clip_triangle(triangle, planes, output_triangles);
+  auto t1 = std::chrono::high_resolution_clock::now();
+
+  std::stack<const BVH::Node *> node_stack;
+  node_stack.push(bvh.get_root());
+  while (!node_stack.empty()) {
+    const BVH::Node *node = node_stack.top();
+    node_stack.pop();
+    if (node == nullptr) {
+      continue;
+    }
+    if (node->is_leaf()) {
+      auto intersection_type = intersect(node->aabb, {planes});
+      if (intersection_type == AABB_Convex_Set_Intersection_Type::FULLY_INSIDE) {
+        copy_triangles(input_triangles, bvh, node, output_triangles);
+      }
+      else if (intersection_type == AABB_Convex_Set_Intersection_Type::OVERLAP) {
+        for (size_t i = node->start; i < node->start + node->count; i++) {
+          clip_triangle(input_triangles[bvh.get_primitive_index(i)], planes, output_triangles);
+        }
+      }
+    }
+    else {
+      node_stack.push(node->left);
+      node_stack.push(node->right);
+    }
   }
+
+  // for (const Triangle &triangle : input_triangles) {
+  // clip_triangle(triangle, planes, output_triangles);
+  // }
+  auto t2 = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> ms = t2 - t1;
+  std::cout << "Time taken: " << ms.count() << " ms" << std::endl;
   std::cout << "Number of triangles after clipping: " << output_triangles.size() << std::endl;
   write_binary_stl("clipped.stl", output_triangles);
   return 0;
