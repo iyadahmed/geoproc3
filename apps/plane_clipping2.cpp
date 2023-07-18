@@ -212,9 +212,6 @@ int main(int argc, char **argv)
     }
   }
 
-  // for (const Triangle &triangle : input_triangles) {
-  // clip_triangle(triangle, planes, output_triangles);
-  // }
   auto t2 = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::milli> ms = t2 - t1;
   std::cout << "Time taken: " << ms.count() << " ms" << std::endl;
