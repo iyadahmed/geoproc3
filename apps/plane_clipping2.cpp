@@ -151,7 +151,7 @@ static void triangulate_fan(const std::vector<Vec3> &convex_polygon, std::vector
   }
 }
 
-static std::vector<Vec3> as_polygon([[maybe_unused]] const Triangle &triangle)
+static std::vector<Vec3> as_polygon(const Triangle &triangle)
 {
   return {triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]};
 }
