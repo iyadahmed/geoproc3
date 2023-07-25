@@ -24,7 +24,7 @@ target_compile_features(geoproc_lib PUBLIC cxx_std_20)
 set_target_properties(geoproc_lib PROPERTIES CXX_EXTENSIONS OFF)
 target_include_directories(geoproc_lib PUBLIC "include")
 
-# Enable IPO(aka LTO) if supported
+# Enable Inter Procedural Optimization (AKA Link Time Optimization) if supported
 if(is_ipo_supported)
     set_target_properties(geoproc_lib PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
