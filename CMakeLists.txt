@@ -8,6 +8,7 @@ check_ipo_supported(RESULT is_ipo_supported OUTPUT error)
 # Cache variables
 set(ENABLE_STRICT_COMPILER_OPTIONS ON CACHE BOOL "Enable strict compile options")
 set(ENABLE_ADDRESS_SANATIZER_IN_DEBUG_BUILDS OFF CACHE BOOL "Enable address sanatizer in debug builds")
+set(ENABLE_NATIVE_ARCHITECTURE_OPTIMIZATIONS ON CACHE BOOL "Enable native architecture optimizations")
 
 # Libraries
 add_library(geoproc_lib
@@ -36,6 +37,17 @@ if(ENABLE_STRICT_COMPILER_OPTIONS)
         target_compile_options(geoproc_lib PUBLIC -Wall -Wextra -Wpedantic -Werror)
     elseif(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "MSVC")
         target_compile_options(geoproc_lib PUBLIC /W4 /WX)
+    else()
+        message(WARNING "Unknown compiler frontend variant: ${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+    endif()
+endif()
+
+# Enable native architecture optimizations if requested
+if(ENABLE_NATIVE_ARCHITECTURE_OPTIMIZATIONS)
+    if(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "GNU")
+        target_compile_options(geoproc_lib PUBLIC -march=native)
+    elseif(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "MSVC")
+        target_compile_options(geoproc_lib PUBLIC /arch:native)
     else()
         message(WARNING "Unknown compiler frontend variant: ${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
     endif()
