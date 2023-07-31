@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "bvh.hpp"
+#include "ray.hpp"
 #include "stl_io.hpp"
 #include "vec3.hpp"
 
@@ -17,11 +18,6 @@
 struct Plane {
   Vec3 normal;
   Vec3 point;
-};
-
-struct Ray {
-  Vec3 origin;
-  Vec3 direction;
 };
 
 struct Convex_Set {
