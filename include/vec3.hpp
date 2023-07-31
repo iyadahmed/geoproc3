@@ -99,4 +99,14 @@ struct Vec3 {
   {
     return vector * scalar;
   }
+
+  float max_elem() const
+  {
+    return std::max(std::max(x, y), z);
+  }
+
+  float min_elem() const
+  {
+    return std::min(std::min(x, y), z);
+  }
 };

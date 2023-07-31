@@ -84,3 +84,6 @@ target_link_libraries(plane_clipping2 PRIVATE geoproc_lib)
 
 add_executable(bvh_playground "apps/bvh_playground.cpp")
 target_link_libraries(bvh_playground PRIVATE geoproc_lib)
+
+add_executable(raytracing "apps/raytracing.cpp")
+target_link_libraries(raytracing PRIVATE geoproc_lib)
