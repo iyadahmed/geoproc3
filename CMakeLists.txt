@@ -9,6 +9,7 @@ check_ipo_supported(RESULT is_ipo_supported OUTPUT error)
 set(ENABLE_STRICT_COMPILER_OPTIONS ON CACHE BOOL "Enable strict compile options")
 set(ENABLE_ADDRESS_SANATIZER_IN_DEBUG_BUILDS OFF CACHE BOOL "Enable address sanatizer in debug builds")
 set(ENABLE_NATIVE_ARCHITECTURE_OPTIMIZATIONS ON CACHE BOOL "Enable native architecture optimizations")
+set(ENABLE_GNUPROF OFF CACHE BOOL "Enable GNU Profiling")
 
 # Libraries
 add_library(geoproc_lib
@@ -64,6 +65,15 @@ if(ENABLE_ADDRESS_SANATIZER_IN_DEBUG_BUILDS)
         target_link_options(geoproc_lib PUBLIC $<$<CONFIG:Debug>:/fsanitize=address>)
     else()
         message(WARNING "Unknown compiler frontend variant: ${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+    endif()
+endif()
+
+if(ENABLE_GNUPROF)
+    if(CMAKE_CXX_COMPILER_FRONTEND_VARIANT MATCHES "GNU")
+        target_compile_options(geoproc_lib PUBLIC -pg)
+        target_link_options(geoproc_lib PUBLIC -pg)
+    else()
+        message(FATAL_ERROR "GNU Profiling is assumed not supported for this compiler frontend variant: ${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
     endif()
 endif()
 
