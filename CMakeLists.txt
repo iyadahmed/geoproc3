@@ -18,6 +18,7 @@ add_library(geoproc_lib
     "include/ray_aabb_intersection.hpp"
     "include/ray.hpp"
     "include/stl_io.hpp"
+    "include/triangle.hpp"
     "include/vec3.hpp"
 
     "src/bvh.cpp"

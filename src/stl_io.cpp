@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "stl_io.hpp"
+#include "triangle.hpp"
 
 constexpr int STL_BINARY_HEADER_SIZE = 80;
 
