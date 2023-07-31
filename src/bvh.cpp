@@ -4,39 +4,6 @@
 
 #include "bvh.hpp"
 
-BVH::AABB BVH::AABB::operator+(const AABB &other) const
-{
-  return AABB{min.min(other.min), max.max(other.max)};
-}
-
-void BVH::AABB::operator+=(const AABB &other)
-{
-  min = min.min(other.min);
-  max = max.max(other.max);
-}
-
-Vec3 BVH::AABB::get_corner(int index) const
-{
-  assert(index >= 0 && index < 8);
-  // Thanks Copilot! :)
-  return Vec3{index & 1 ? max.x : min.x, index & 2 ? max.y : min.y, index & 4 ? max.z : min.z};
-}
-
-Vec3 BVH::AABB::calc_center() const
-{
-  return (min + max) / 2;
-}
-
-bool BVH::AABB::is_close(const AABB &other, float tolerance) const
-{
-  return min.is_close(other.min, tolerance) && max.is_close(other.max, tolerance);
-}
-
-bool BVH::AABB::contains(const AABB &other) const
-{
-  return other.min >= min && other.max <= max;
-}
-
 BVH::Node *BVH::create_node(const std::vector<AABB> &bounding_boxes, size_t start, size_t count)
 {
   AABB aabb = bounding_boxes[indices[start]];
@@ -107,7 +74,8 @@ static size_t partition_indices(const std::vector<Vec3> &bounding_boxes_centers,
                                 int split_axis,
                                 float split_position)
 {
-  // Based on https://web.archive.org/web/20230704185541/https://en.cppreference.com/w/cpp/algorithm/partition
+  // Based on
+  // https://web.archive.org/web/20230704185541/https://en.cppreference.com/w/cpp/algorithm/partition
 #define predicate(i) (bounding_boxes_centers[indices[i]][split_axis] < split_position)
 
   size_t first = start;

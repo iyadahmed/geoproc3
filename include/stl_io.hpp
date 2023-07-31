@@ -11,11 +11,11 @@ struct Triangle {
 
   Triangle(const Vec3 &v0, const Vec3 &v1, const Vec3 &v2) : vertices{v0, v1, v2} {}
 
-  BVH::AABB calc_aabb() const
+  AABB calc_aabb() const
   {
     Vec3 min = vertices[0].min(vertices[1]).min(vertices[2]);
     Vec3 max = vertices[0].max(vertices[1]).max(vertices[2]);
-    return BVH::AABB{min, max};
+    return AABB{min, max};
   }
 };
 

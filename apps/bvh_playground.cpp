@@ -12,7 +12,7 @@ int main(int argc, char **argv)
     return 1;
   }
   std::vector<Triangle> triangles = read_binary_stl(argv[1]);
-  std::vector<BVH::AABB> bounding_boxes;
+  std::vector<AABB> bounding_boxes;
   bounding_boxes.reserve(triangles.size());
   for (const Triangle &t : triangles)
     bounding_boxes.push_back(t.calc_aabb());

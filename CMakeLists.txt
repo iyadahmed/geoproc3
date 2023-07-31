@@ -12,6 +12,7 @@ set(ENABLE_NATIVE_ARCHITECTURE_OPTIMIZATIONS ON CACHE BOOL "Enable native archit
 
 # Libraries
 add_library(geoproc_lib
+    "include/aabb.hpp"
     "include/bvh.hpp"
     "include/stl_io.hpp"
     "include/vec3.hpp"

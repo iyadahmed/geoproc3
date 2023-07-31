@@ -3,21 +3,11 @@
 #include <cstddef>  // for size_t
 #include <vector>
 
+#include "aabb.hpp"
 #include "vec3.hpp"
 
 struct BVH {
  public:
-  struct AABB {
-    Vec3 min, max;
-
-    AABB operator+(const AABB &other) const;
-    void operator+=(const AABB &other);
-    Vec3 get_corner(int index) const;
-    Vec3 calc_center() const;
-    bool is_close(const AABB &other, float tolerance) const;
-    bool contains(const AABB &other) const;
-  };
-
   struct Node {
     AABB aabb;
     Node *left, *right;

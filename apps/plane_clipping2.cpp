@@ -48,7 +48,7 @@ bool Convex_Set::is_inside(const Vec3 &point) const
   return true;
 }
 
-AABB_Convex_Set_Intersection_Type intersect(const BVH::AABB &aabb, const Convex_Set &convex_set)
+AABB_Convex_Set_Intersection_Type intersect(const AABB &aabb, const Convex_Set &convex_set)
 {
   int num_inside = 0;
   for (int i = 0; i < 8; i++)
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
   std::vector<Triangle> input_triangles = read_binary_stl(argv[1]);
   std::vector<Triangle> output_triangles;
   output_triangles.reserve(input_triangles.size());
-  std::vector<BVH::AABB> bounding_boxes;
+  std::vector<AABB> bounding_boxes;
   bounding_boxes.reserve(input_triangles.size());
   for (const Triangle &t : input_triangles) {
     bounding_boxes.push_back(t.calc_aabb());
