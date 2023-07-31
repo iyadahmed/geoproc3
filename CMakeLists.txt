@@ -15,6 +15,7 @@ set(ENABLE_GNUPROF OFF CACHE BOOL "Enable GNU Profiling")
 add_library(geoproc_lib
     "include/aabb.hpp"
     "include/bvh.hpp"
+    "include/ray_aabb_intersection.hpp"
     "include/ray.hpp"
     "include/stl_io.hpp"
     "include/vec3.hpp"
